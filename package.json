@@ -1,0 +1,16 @@
+{
+  "name": "budget-manipulator",
+  "version": "1.0.0",
+  "description": "Scripts in node js to manipulate my personal budget spreadsheet",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "google-spreadsheet": "^3.1.15",
+    "googleapis": "^39.2.0"
+  }
+}
