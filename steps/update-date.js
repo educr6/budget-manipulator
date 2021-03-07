@@ -40,7 +40,7 @@ const updateDate = async (
     data: dateToWriteInTheSheet,
   });
 
-  console.log("New date written in montly budget sheet");
+  console.log("New date written in monthly budget sheet");
 
   //Writing date in the expense tracking sheet
 
