@@ -16,6 +16,11 @@ const monthsInSpanish = {
   12: "diciembre",
 };
 
+const dateCells = {
+  monthly_budget: "A21",
+  expense_tracking: "A2",
+};
+
 const sheetTitles = {
   MONTHLY_BUDGET: "Presupuesto mensual",
   EXPENSE_TRACKING: "Expense tracking",
@@ -28,21 +33,40 @@ const updateDate = async (
 
   //Writing date in the monthly budget sheet
   let sheet = doc.sheetsByTitle[sheetTitles.MONTHLY_BUDGET];
-  await sheet.loadCells("A21:B23");
-  const dateCellInMonthlyBudgetSheet = sheet.getCellByA1("A21");
-  dateCellInMonthlyBudgetSheet.value = dateToWriteInTheSheet;
-  await sheet.saveUpdatedCells();
+
+  writeDataInCell({
+    cell: dateCells.monthly_budget,
+    sheet: sheet,
+    data: dateToWriteInTheSheet,
+  });
 
   console.log("New date written in montly budget sheet");
 
   //Writing date in the expense tracking sheet
+
   sheet = doc.sheetsByTitle[sheetTitles.EXPENSE_TRACKING];
-  await sheet.loadCells("A2:J2");
-  const dateCellInExpenseTrackingSheet = sheet.getCellByA1("A2");
-  dateCellInExpenseTrackingSheet.value = dateToWriteInTheSheet;
-  await sheet.saveUpdatedCells();
+  writeDataInCell({
+    cell: dateCells.expense_tracking,
+    sheet: sheet,
+    data: dateToWriteInTheSheet,
+  });
 
   console.log("New date written in expense tracking sheet");
+};
+
+const writeDataInCell = async (dataObject) => {
+  if (!"data" in dataObject)
+    throw "The object does not contain data to be written in the cell";
+  if (!"cell" in dataObject)
+    throw "The object does not contain the cell to write on";
+  if (!"sheet" in dataObject)
+    throw "The object does not contain the sheet object";
+
+  let sheet = dataObject.sheet;
+  await sheet.loadCells(dataObject.cell);
+  const cellToWriteOn = sheet.getCellByA1(dataObject.cell);
+  cellToWriteOn.value = dataObject.data;
+  await sheet.saveUpdatedCells();
 };
 
 const createDateString = async () => {
