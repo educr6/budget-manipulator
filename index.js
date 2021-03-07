@@ -1,5 +1,6 @@
 require("dotenv").config();
-const creds = require("./budget-manipulator-d57be5158174.json");
+const creds = require(process.env.GOOGLE_CREDENTIALS_ROUTE);
+const updateDate = require("./steps/update-date");
 
 (async function () {
   const { GoogleSpreadsheet } = require("google-spreadsheet");
@@ -9,15 +10,7 @@ const creds = require("./budget-manipulator-d57be5158174.json");
 
   // Initialize Auth - see more available options at https://theoephraim.github.io/node-google-spreadsheet/#/getting-started/authentication
   await doc.useServiceAccountAuth(creds);
-
   await doc.loadInfo(); // loads document properties and worksheets
   console.log(doc.title);
-
-  const sheet = doc.sheetsByIndex[0]; // or use doc.sheetsById[id] or doc.sheetsByTitle[title]
-  console.log(sheet.title);
-  console.log(sheet.rowCount);
-
-  // adding / removing sheets
-  const newSheet = await doc.addSheet({ title: "hot new sheet!" });
-  await newSheet.delete();
+  updateDate(doc);
 })();
