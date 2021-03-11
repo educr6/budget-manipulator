@@ -14,6 +14,6 @@ const backupMonthlyBudget = require("./steps/backup-monthly-budget");
   await doc.loadInfo(); // loads document properties and worksheets
   console.log(doc.title);
 
-  updateDate(doc);
+  //updateDate(doc);
   backupMonthlyBudget(doc);
 })();

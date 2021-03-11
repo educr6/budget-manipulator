@@ -39,14 +39,57 @@ const backupMonthlyBudget = async (
     }
   }
 
-  let targetCellToPaste = "A37";
-  const targetCellLocation = getCellIndexFromA1(targetCellToPaste);
+  //Leer dato de donde pegar
+  await sheet.loadCells("V3:V4");
+  let targetCellToPasteInfoCell = sheet.getCellByA1("V3");
+  let targetCellToPaste = targetCellToPasteInfoCell.value;
+
+  const targetCellLocation = await getCellIndexFromA1(targetCellToPaste);
   const shiftFactor = {
     row: targetCellLocation.rowIndex - allCells[0].row,
     column: targetCellLocation.columnIndex - allCells[0].column,
   };
 
-  await sheet.loadCells("A37:S69");
+  const budgetMatrixInfo = await getMatrixSizeFromA1(budgetLocation);
+  const pasteCellRange = await createCellRangeStringFromA1AndMatrixSize(
+    targetCellToPaste,
+    budgetMatrixInfo,
+    3
+  );
+
+  console.log(targetCellToPaste, budgetMatrixInfo, pasteCellRange);
+
+  //Create red stripe
+
+  const stripeSize = 19;
+  let cellToPutRedStripeIndex = await getCellIndexFromA1(targetCellToPaste);
+  cellToPutRedStripeIndex.rowIndex -= 2;
+
+  const cellToPutRedStripe = await getA1StringFromIndex(
+    cellToPutRedStripeIndex
+  );
+
+  const cellRangeForRedStripes = await createCellRangeStringFromA1AndMatrixSize(
+    cellToPutRedStripe,
+    {
+      rowSize: 1,
+      columnSize: stripeSize,
+    }
+  );
+
+  await sheet.loadCells(cellRangeForRedStripes);
+  for (
+    let i = cellToPutRedStripeIndex.columnIndex;
+    i < cellToPutRedStripeIndex.columnIndex + stripeSize;
+    i++
+  ) {
+    let currCell = sheet.getCell(cellToPutRedStripeIndex.rowIndex, i);
+    currCell.backgroundColor = { red: 1 };
+  }
+  //let currCell = sheet;
+
+  //Write content in new cells
+  await sheet.loadCells(pasteCellRange);
   allCells.forEach((cell) => {
     let currCell = sheet.getCell(
       cell.row + shiftFactor.row,
@@ -55,9 +98,28 @@ const backupMonthlyBudget = async (
     currCell.value = cell.value;
   });
   await sheet.saveUpdatedCells();
+
+  //Replace value for next paste
+  const newValueToPaste = await generateNewPasteCell(pasteCellRange, 3);
+  await sheet.loadCells("V3:V4");
+  targetCellToPasteInfoCell = sheet.getCellByA1("V3");
+  targetCellToPasteInfoCell.value = newValueToPaste;
+  await sheet.saveUpdatedCells();
 };
 
-const getCellIndexFromA1 = (str) => {
+const generateNewPasteCell = async (cellRange, MARGIN = 0) => {
+  let [start, end] = cellRange.split(":");
+  const column = start.match(/\D+/)[0];
+  let row = end.match(/\d+/)[0];
+  row = parseInt(row) + MARGIN;
+
+  const result = column + "" + row;
+  return result;
+};
+
+const getCellIndexFromA1 = async (str) => {
+  const CHAR_NUMBER_TO_SUBTRACT = 65;
+
   const matchNumbersRegex = /\d+/;
   const matchNonNumbersRegex = /\D+/;
 
@@ -76,12 +138,11 @@ const getCellIndexFromA1 = (str) => {
   };
 };
 
-function getMatrixSizeFromA1(str) {
-  const CHAR_NUMBER_TO_SUBTRACT = 65;
+async function getMatrixSizeFromA1(str) {
   let [start, end] = str.split(":");
 
-  const startIndexes = getCellIndexFromA1(start);
-  const endIndexes = getCellIndexFromA1(end);
+  const startIndexes = await getCellIndexFromA1(start);
+  const endIndexes = await getCellIndexFromA1(end);
 
   const lettersGap = endIndexes.columnIndex - startIndexes.columnIndex + 1;
   const numbersGap = endIndexes.rowIndex - startIndexes.rowIndex + 1;
@@ -92,6 +153,36 @@ function getMatrixSizeFromA1(str) {
     rowSize: numbersGap,
     columnSize: lettersGap,
   };
+}
+
+async function createCellRangeStringFromA1AndMatrixSize(
+  cell,
+  matrix,
+  MARGIN = 0
+) {
+  const startCellIndex = await getCellIndexFromA1(cell);
+  const endCellIndex = {
+    rowIndex: startCellIndex.rowIndex + matrix.rowSize - 1,
+    columnIndex: startCellIndex.columnIndex + matrix.columnSize - 1,
+  };
+
+  //Adding an extra marging for safety
+  endCellIndex.rowIndex += MARGIN;
+  endCellIndex.columnIndex += MARGIN;
+
+  const endCellString = await getA1StringFromIndex(endCellIndex);
+  const result = cell + ":" + endCellString;
+
+  return result;
+}
+
+async function getA1StringFromIndex(cell) {
+  const row = cell.rowIndex + 1;
+  const column = String.fromCharCode(
+    cell.columnIndex + CHAR_NUMBER_TO_SUBTRACT
+  );
+  const result = column + "" + row;
+  return result;
 }
 
 module.exports = backupMonthlyBudget;
