@@ -1,14 +1,20 @@
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 
+const sheetTitles = {
+  MONTHLY_BUDGET: "Presupuesto mensual",
+  EXPENSE_TRACKING: "Expense tracking",
+};
+
+const CHAR_NUMBER_TO_SUBTRACT = 65;
+
 const backupMonthlyBudget = async (
   doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID)
 ) => {
-  console.log("Hello world");
-
-  let sheet = doc.sheetsByTitle["backup-test"];
-  await sheet.loadCells("A3:B5");
+  const budgetLocation = "A2:S29";
+  let sheet = doc.sheetsByTitle[sheetTitles.MONTHLY_BUDGET];
+  await sheet.loadCells(budgetLocation);
   let allCells = [];
-  const matrix = await getMatrixSizeFromA1("A3:B5");
+  const matrix = await getMatrixSizeFromA1(budgetLocation);
 
   for (
     let i = matrix.rowStartIndex;
@@ -33,14 +39,14 @@ const backupMonthlyBudget = async (
     }
   }
 
-  let targetCellToPaste = "E3";
+  let targetCellToPaste = "A37";
   const targetCellLocation = getCellIndexFromA1(targetCellToPaste);
   const shiftFactor = {
     row: targetCellLocation.rowIndex - allCells[0].row,
     column: targetCellLocation.columnIndex - allCells[0].column,
   };
 
-  await sheet.loadCells("A1:S90");
+  await sheet.loadCells("A37:S69");
   allCells.forEach((cell) => {
     let currCell = sheet.getCell(
       cell.row + shiftFactor.row,
@@ -52,8 +58,6 @@ const backupMonthlyBudget = async (
 };
 
 const getCellIndexFromA1 = (str) => {
-  const CHAR_NUMBER_TO_SUBTRACT = 65;
-
   const matchNumbersRegex = /\d+/;
   const matchNonNumbersRegex = /\D+/;
 
@@ -75,29 +79,16 @@ const getCellIndexFromA1 = (str) => {
 function getMatrixSizeFromA1(str) {
   const CHAR_NUMBER_TO_SUBTRACT = 65;
   let [start, end] = str.split(":");
-  const matchNumbersRegex = /\d+/;
-  const matchNonNumbersRegex = /\D+/;
 
-  let startNumber = start.match(matchNumbersRegex);
-  let endNumber = end.match(matchNumbersRegex);
+  const startIndexes = getCellIndexFromA1(start);
+  const endIndexes = getCellIndexFromA1(end);
 
-  startNumber = parseInt(startNumber[0], "10");
-  endNumber = parseInt(endNumber, "10");
-
-  let startLetter = start.match(matchNonNumbersRegex);
-  let endLetter = end.match(matchNonNumbersRegex);
-
-  startLetter = startLetter[0];
-  endLetter = endLetter[0];
-
-  const numbersGap = endNumber - startNumber + 1;
-  const lettersGap = endLetter.charCodeAt(0) - startLetter.charCodeAt(0) + 1;
-
-  const columnStart = startLetter.charCodeAt(0) - CHAR_NUMBER_TO_SUBTRACT;
+  const lettersGap = endIndexes.columnIndex - startIndexes.columnIndex + 1;
+  const numbersGap = endIndexes.rowIndex - startIndexes.rowIndex + 1;
 
   return {
-    columnStartIndex: columnStart,
-    rowStartIndex: startNumber - 1,
+    columnStartIndex: startIndexes.columnIndex,
+    rowStartIndex: startIndexes.rowIndex,
     rowSize: numbersGap,
     columnSize: lettersGap,
   };
