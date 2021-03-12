@@ -7,35 +7,17 @@ const sheetTitles = {
 
 const CHAR_NUMBER_TO_SUBTRACT = 65;
 
-const backupMonthlyBudget = async (
-  doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID)
-) => {
+const backupMonthlyBudget = async (doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID)) => {
   const budgetLocation = "A2:S29";
   let sheet = doc.sheetsByTitle[sheetTitles.MONTHLY_BUDGET];
   await sheet.loadCells(budgetLocation);
   let allCells = [];
   const matrix = await getMatrixSizeFromA1(budgetLocation);
 
-  for (
-    let i = matrix.rowStartIndex;
-    i < matrix.rowStartIndex + matrix.rowSize;
-    i++
-  ) {
-    for (
-      let j = matrix.columnStartIndex;
-      j < matrix.columnStartIndex + matrix.columnSize;
-      j++
-    ) {
+  for (let i = matrix.rowStartIndex; i < matrix.rowStartIndex + matrix.rowSize; i++) {
+    for (let j = matrix.columnStartIndex; j < matrix.columnStartIndex + matrix.columnSize; j++) {
       let currentCell = sheet.getCell(i, j);
-      console.log(
-        "This is the value of " + i + "," + j + ": " + currentCell.value
-      );
-
-      allCells.push({
-        column: j,
-        row: i,
-        value: currentCell.value,
-      });
+      allCells.push({ column: j, row: i, value: currentCell.value });
     }
   }
 
@@ -51,11 +33,7 @@ const backupMonthlyBudget = async (
   };
 
   const budgetMatrixInfo = await getMatrixSizeFromA1(budgetLocation);
-  const pasteCellRange = await createCellRangeStringFromA1AndMatrixSize(
-    targetCellToPaste,
-    budgetMatrixInfo,
-    3
-  );
+  const pasteCellRange = await createCellRangeStringFromA1AndMatrixSize(targetCellToPaste, budgetMatrixInfo, 3);
 
   console.log(targetCellToPaste, budgetMatrixInfo, pasteCellRange);
 
@@ -65,24 +43,15 @@ const backupMonthlyBudget = async (
   let cellToPutRedStripeIndex = await getCellIndexFromA1(targetCellToPaste);
   cellToPutRedStripeIndex.rowIndex -= 2;
 
-  const cellToPutRedStripe = await getA1StringFromIndex(
-    cellToPutRedStripeIndex
-  );
+  const cellToPutRedStripe = await getA1StringFromIndex(cellToPutRedStripeIndex);
 
-  const cellRangeForRedStripes = await createCellRangeStringFromA1AndMatrixSize(
-    cellToPutRedStripe,
-    {
-      rowSize: 1,
-      columnSize: stripeSize,
-    }
-  );
+  const cellRangeForRedStripes = await createCellRangeStringFromA1AndMatrixSize(cellToPutRedStripe, {
+    rowSize: 1,
+    columnSize: stripeSize,
+  });
 
   await sheet.loadCells(cellRangeForRedStripes);
-  for (
-    let i = cellToPutRedStripeIndex.columnIndex;
-    i < cellToPutRedStripeIndex.columnIndex + stripeSize;
-    i++
-  ) {
+  for (let i = cellToPutRedStripeIndex.columnIndex; i < cellToPutRedStripeIndex.columnIndex + stripeSize; i++) {
     let currCell = sheet.getCell(cellToPutRedStripeIndex.rowIndex, i);
     currCell.backgroundColor = { red: 1 };
   }
@@ -91,10 +60,7 @@ const backupMonthlyBudget = async (
   //Write content in new cells
   await sheet.loadCells(pasteCellRange);
   allCells.forEach((cell) => {
-    let currCell = sheet.getCell(
-      cell.row + shiftFactor.row,
-      cell.column + shiftFactor.column
-    );
+    let currCell = sheet.getCell(cell.row + shiftFactor.row, cell.column + shiftFactor.column);
     currCell.value = cell.value;
   });
   await sheet.saveUpdatedCells();
@@ -155,11 +121,7 @@ async function getMatrixSizeFromA1(str) {
   };
 }
 
-async function createCellRangeStringFromA1AndMatrixSize(
-  cell,
-  matrix,
-  MARGIN = 0
-) {
+async function createCellRangeStringFromA1AndMatrixSize(cell, matrix, MARGIN = 0) {
   const startCellIndex = await getCellIndexFromA1(cell);
   const endCellIndex = {
     rowIndex: startCellIndex.rowIndex + matrix.rowSize - 1,
@@ -178,9 +140,7 @@ async function createCellRangeStringFromA1AndMatrixSize(
 
 async function getA1StringFromIndex(cell) {
   const row = cell.rowIndex + 1;
-  const column = String.fromCharCode(
-    cell.columnIndex + CHAR_NUMBER_TO_SUBTRACT
-  );
+  const column = String.fromCharCode(cell.columnIndex + CHAR_NUMBER_TO_SUBTRACT);
   const result = column + "" + row;
   return result;
 }
