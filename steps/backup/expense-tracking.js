@@ -1,5 +1,5 @@
 const { GoogleSpreadsheet } = require("google-spreadsheet");
-const baseBackUp = require("./base-methods");
+const { backupData } = require("./base-methods");
 const sheetTitles = require("./../../sheet_titles");
 
 const backUpExpenseTracking = async (doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID)) => {
@@ -11,7 +11,7 @@ const backUpExpenseTracking = async (doc = new GoogleSpreadsheet(process.env.GOO
     pasteCell: "T4",
   };
 
-  await baseBackUp(doc, backUpInfo);
+  await backupData(doc, backUpInfo);
 };
 
 module.exports = backUpExpenseTracking;
