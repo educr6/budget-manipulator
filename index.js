@@ -3,6 +3,7 @@ const creds = require(process.env.GOOGLE_CREDENTIALS_ROUTE);
 const updateDate = require("./steps/update-date");
 const backupMonthlyBudget = require("./steps/backup/monthly-budget");
 const backupExpenseTracking = require("./steps/backup/expense-tracking");
+const clearExpenses = require("./steps/clear_expenses");
 
 (async function () {
   const { GoogleSpreadsheet } = require("google-spreadsheet");
@@ -15,7 +16,8 @@ const backupExpenseTracking = require("./steps/backup/expense-tracking");
   await doc.loadInfo(); // loads document properties and worksheets
   console.log(doc.title);
 
-  updateDate(doc);
+  await updateDate(doc);
   await backupMonthlyBudget(doc);
   await backupExpenseTracking(doc);
+  await clearExpenses(doc);
 })();

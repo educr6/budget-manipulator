@@ -197,4 +197,7 @@ async function getA1StringFromIndex(cell) {
   return result;
 }
 
-module.exports = backupData;
+module.exports = {
+  backupData: backupData,
+  getMatrixSizeFromA1: getMatrixSizeFromA1,
+};
