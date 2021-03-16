@@ -3,6 +3,7 @@ const { GoogleSpreadsheet } = require("google-spreadsheet");
 const sheetTitles = {
   MONTHLY_BUDGET: "Presupuesto mensual",
   EXPENSE_TRACKING: "Expense tracking",
+  BUDGET_HISTORY: "Historial de presupuestos",
 };
 
 const CHAR_NUMBER_TO_SUBTRACT = 65;
@@ -22,8 +23,9 @@ const backupMonthlyBudget = async (doc = new GoogleSpreadsheet(process.env.GOOGL
   }
 
   //Leer dato de donde pegar
-  await sheet.loadCells("V3:V4");
-  let targetCellToPasteInfoCell = sheet.getCellByA1("V3");
+  sheet = doc.sheetsByTitle[sheetTitles.BUDGET_HISTORY];
+  await sheet.loadCells("W5:W6");
+  let targetCellToPasteInfoCell = sheet.getCellByA1("W5");
   let targetCellToPaste = targetCellToPasteInfoCell.value;
 
   const targetCellLocation = await getCellIndexFromA1(targetCellToPaste);
@@ -50,14 +52,19 @@ const backupMonthlyBudget = async (doc = new GoogleSpreadsheet(process.env.GOOGL
     columnSize: stripeSize,
   });
 
+  //WRITE THE MONTH AND THE RED STRIPE BEFORE THE BACKUP
   await sheet.loadCells(cellRangeForRedStripes);
+  let cellToWriteMonth = sheet.getCell(cellToPutRedStripeIndex.rowIndex, 0);
+  cellToWriteMonth.textFormat = { bold: true, fontSize: 24 };
+  cellToWriteMonth.value = "Marzo 2021";
+
   for (let i = cellToPutRedStripeIndex.columnIndex; i < cellToPutRedStripeIndex.columnIndex + stripeSize; i++) {
     let currCell = sheet.getCell(cellToPutRedStripeIndex.rowIndex, i);
     currCell.backgroundColor = { red: 1 };
   }
   //let currCell = sheet;
 
-  //Write content in new cells
+  //WRITE CONTENT OF BACKUP
   await sheet.loadCells(pasteCellRange);
   allCells.forEach((cell) => {
     let currCell = sheet.getCell(cell.row + shiftFactor.row, cell.column + shiftFactor.column);
@@ -67,8 +74,8 @@ const backupMonthlyBudget = async (doc = new GoogleSpreadsheet(process.env.GOOGL
 
   //Replace value for next paste
   const newValueToPaste = await generateNewPasteCell(pasteCellRange, 3);
-  await sheet.loadCells("V3:V4");
-  targetCellToPasteInfoCell = sheet.getCellByA1("V3");
+  await sheet.loadCells("W5:W6");
+  targetCellToPasteInfoCell = sheet.getCellByA1("W5");
   targetCellToPasteInfoCell.value = newValueToPaste;
   await sheet.saveUpdatedCells();
 };
