@@ -1,5 +1,7 @@
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const CHAR_BASE_NUMBER = 65;
+const months_in_spanish = require("../../months_in_spanish");
+const { DateTime } = require("luxon");
 
 const backupData = async (doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID), dataToBackup) => {
   const dataToBeBackedUp = await copyData(doc, dataToBackup);
@@ -75,7 +77,9 @@ const createRedStripeWithMonth = async (doc, dataToBackup) => {
 
   let cellToWriteMonth = sheet.getCellByA1(cellToPutRedStripe);
   cellToWriteMonth.textFormat = { bold: true, fontSize: 24 };
-  cellToWriteMonth.value = "Marzo 2021";
+  const todaysDate = DateTime.now();
+  const currentMonth = monthsInSpanish[todaysDate.month];
+  cellToWriteMonth.value = "" + currentMonth + " " + todaysDate.year;
 
   //COLOR THE STRIPE RED
   for (let i = cellToPutRedStripeIndex.columnIndex; i < cellToPutRedStripeIndex.columnIndex + STRIPE_SIZE; i++) {
