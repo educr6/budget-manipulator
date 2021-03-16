@@ -1,7 +1,8 @@
 require("dotenv").config();
 const creds = require(process.env.GOOGLE_CREDENTIALS_ROUTE);
 const updateDate = require("./steps/update-date");
-const backupMonthlyBudget = require("./steps/backup-monthly-budget");
+const backupMonthlyBudget = require("./steps/backup/monthly-budget");
+const backupExpenseTracking = require("./steps/backup/expense-tracking");
 
 (async function () {
   const { GoogleSpreadsheet } = require("google-spreadsheet");
@@ -14,6 +15,7 @@ const backupMonthlyBudget = require("./steps/backup-monthly-budget");
   await doc.loadInfo(); // loads document properties and worksheets
   console.log(doc.title);
 
-  //updateDate(doc);
-  backupMonthlyBudget(doc);
+  updateDate(doc);
+  await backupMonthlyBudget(doc);
+  await backupExpenseTracking(doc);
 })();
