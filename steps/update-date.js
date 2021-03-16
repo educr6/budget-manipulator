@@ -26,9 +26,7 @@ const sheetTitles = {
   EXPENSE_TRACKING: "Expense tracking",
 };
 
-const updateDate = async (
-  doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID)
-) => {
+const updateDate = async (doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID)) => {
   const dateToWriteInTheSheet = await createDateString();
 
   //Writing date in the monthly budget sheet
@@ -55,12 +53,9 @@ const updateDate = async (
 };
 
 const writeDataInCell = async (dataObject) => {
-  if (!"data" in dataObject)
-    throw "The object does not contain data to be written in the cell";
-  if (!"cell" in dataObject)
-    throw "The object does not contain the cell to write on";
-  if (!"sheet" in dataObject)
-    throw "The object does not contain the sheet object";
+  if (!"data" in dataObject) throw "The object does not contain data to be written in the cell";
+  if (!"cell" in dataObject) throw "The object does not contain the cell to write on";
+  if (!"sheet" in dataObject) throw "The object does not contain the sheet object";
 
   let sheet = dataObject.sheet;
   await sheet.loadCells(dataObject.cell);
@@ -73,10 +68,7 @@ const createDateString = async () => {
   const todaysDate = DateTime.now();
   const currentMonth = monthsInSpanish[todaysDate.month];
 
-  const nextMonth =
-    currentMonth == monthsInSpanish[12]
-      ? monthsInSpanish[0]
-      : monthsInSpanish[todaysDate.month + 1];
+  const nextMonth = currentMonth == monthsInSpanish[12] ? monthsInSpanish[0] : monthsInSpanish[todaysDate.month + 1];
 
   let dateToWriteInTheSheet = `${todaysDate.day} de ${currentMonth} a 27 de ${nextMonth}`;
   return dateToWriteInTheSheet;
