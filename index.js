@@ -15,7 +15,7 @@ const backupExpenseTracking = require("./steps/backup/expense-tracking");
   await doc.loadInfo(); // loads document properties and worksheets
   console.log(doc.title);
 
-  //updateDate(doc);
-  //await backupMonthlyBudget(doc);
+  updateDate(doc);
+  await backupMonthlyBudget(doc);
   await backupExpenseTracking(doc);
 })();
