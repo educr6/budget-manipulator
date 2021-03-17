@@ -200,4 +200,6 @@ async function getA1StringFromIndex(cell) {
 module.exports = {
   backupData: backupData,
   getMatrixSizeFromA1: getMatrixSizeFromA1,
+  getA1StringFromIndex: getA1StringFromIndex,
+  getCellIndexFromA1: getCellIndexFromA1,
 };

@@ -4,6 +4,7 @@ const updateDate = require("./steps/update-date");
 const backupMonthlyBudget = require("./steps/backup/monthly-budget");
 const backupExpenseTracking = require("./steps/backup/expense-tracking");
 const clearExpenses = require("./steps/clear_expenses");
+const registerRecurrentPayments = require("./steps/register_recurrent_payments");
 
 (async function () {
   const { GoogleSpreadsheet } = require("google-spreadsheet");
@@ -16,8 +17,9 @@ const clearExpenses = require("./steps/clear_expenses");
   await doc.loadInfo(); // loads document properties and worksheets
   console.log(doc.title);
 
-  await updateDate(doc);
-  await backupMonthlyBudget(doc);
-  await backupExpenseTracking(doc);
-  await clearExpenses(doc);
+  //await updateDate(doc);
+  //await backupMonthlyBudget(doc);
+  //await backupExpenseTracking(doc);
+  //await clearExpenses(doc);
+  await registerRecurrentPayments(doc);
 })();
