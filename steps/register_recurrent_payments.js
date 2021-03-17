@@ -17,18 +17,6 @@ const registerRecurrentPayments = async (doc = new GoogleSpreadsheet(process.env
 
   let cellWhereNewExpenseWillBeRegister = "";
 
-  for (let i = matrix.rowStartIndex; i < matrix.rowStartIndex + matrix.rowSize; i++) {
-    let currentCell = sheet.getCell(i, 0);
-    if (isCellEmpty(currentCell)) {
-      const cell = await getA1StringFromIndex({ rowIndex: i, columnIndex: 0 });
-      console.log("The answer is " + cell);
-      cellWhereNewExpenseWillBeRegister = cell;
-      break;
-    } else {
-      console.log(currentCell.value);
-    }
-  }
-
   const randomExpense = {
     type: "Gastos fijos",
     description: "Written from javascript",
@@ -36,6 +24,28 @@ const registerRecurrentPayments = async (doc = new GoogleSpreadsheet(process.env
     amount: 1300,
     paymentMethod: "credito",
   };
+
+  const randomExpenseMedalaganario = {
+    type: "Gastos discresionales",
+    description: "Written from javascript medalaganario",
+    category: "Otros",
+    amount: 1300,
+    paymentMethod: "credito",
+  };
+
+  const colum = randomExpense.type === "Gastos fijos" ? 0 : 4;
+
+  for (let i = matrix.rowStartIndex; i < matrix.rowStartIndex + matrix.rowSize; i++) {
+    let currentCell = sheet.getCell(i, colum);
+    if (isCellEmpty(currentCell)) {
+      const cell = await getA1StringFromIndex({ rowIndex: i, columnIndex: colum });
+      console.log("The answer is " + cell);
+      cellWhereNewExpenseWillBeRegister = cell;
+      break;
+    } else {
+      console.log(currentCell.value);
+    }
+  }
 
   let descriptionCellIndex = await getCellIndexFromA1(cellWhereNewExpenseWillBeRegister);
   let categoryCellIndex = JSON.parse(JSON.stringify(descriptionCellIndex));
@@ -57,6 +67,23 @@ const registerRecurrentPayments = async (doc = new GoogleSpreadsheet(process.env
   let paymentMethodCell = sheet.getCell(paymentMethodCellIndex.rowIndex, paymentMethodCellIndex.columnIndex);
   paymentMethodCell.value = randomExpense.paymentMethod;
   await sheet.saveUpdatedCells();
+};
+
+const locateCellToRegisterExpense = (expense, sheetInfo) => {
+    for (let i = matrix.rowStartIndex; i < matrix.rowStartIndex + matrix.rowSize; i++) {
+        let currentCell = sheet.getCell(i, colum);
+        if (isCellEmpty(currentCell)) {
+          const cell = await getA1StringFromIndex({ rowIndex: i, columnIndex: colum });
+          console.log("The answer is " + cell);
+          cellWhereNewExpenseWillBeRegister = cell;
+          break;
+        } else {
+          console.log(currentCell.value);
+        }
+      }
+
+    
+
 };
 
 module.exports = registerRecurrentPayments;
