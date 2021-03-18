@@ -1,6 +1,6 @@
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const sheetTitles = require("../sheet_titles");
-const { getMatrixSizeFromA1, getA1StringFromIndex } = require("./backup/base-methods");
+const { getMatrixSizeFromA1 } = require("./backup/base-methods");
 
 const expensesCellRange = "A5:J73";
 
