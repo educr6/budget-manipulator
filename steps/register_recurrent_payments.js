@@ -56,6 +56,8 @@ const locateCellToRegisterExpense = async (expense, sheetInfo) => {
 
   for (let i = matrix.rowStartIndex; i < matrix.rowStartIndex + matrix.rowSize; i++) {
     let currentCell = sheet.getCell(i, colum);
+    console.log("Value of this row is ", currentCell.value);
+    console.log("Cell being checked is ", await getA1StringFromIndex({ rowIndex: i, columnIndex: colum }));
 
     if (isCellEmpty(currentCell)) {
       const cell = await getA1StringFromIndex({ rowIndex: i, columnIndex: colum });
