@@ -1,12 +1,12 @@
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 const CHAR_BASE_NUMBER = 65;
-const months_in_spanish = require("../../months_in_spanish");
+const monthsInSpanish = require("../../months_in_spanish");
 const { DateTime } = require("luxon");
 
 const backupData = async (doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID), dataToBackup) => {
   const dataToBeBackedUp = await copyData(doc, dataToBackup);
   dataToBackup.dataToBeBackedUp = dataToBeBackedUp;
-  console.log("The data copied was ", dataToBeBackedUp);
+  //console.log("The data copied was ", dataToBeBackedUp);
 
   const cellWhereBackupWillBePasted = await getCellWhereBackupWillBePasted(doc, dataToBackup);
   dataToBackup.cellWhereBackupWillBePasted = cellWhereBackupWillBePasted;
