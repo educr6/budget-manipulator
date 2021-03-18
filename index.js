@@ -17,9 +17,12 @@ const registerRecurrentPayments = require("./steps/register_recurrent_payments")
   await doc.loadInfo(); // loads document properties and worksheets
   console.log(doc.title);
 
-  //await updateDate(doc);
-  //await backupMonthlyBudget(doc);
-  //await backupExpenseTracking(doc);
-  //await clearExpenses(doc);
-  await registerRecurrentPayments(doc);
+  await updateDate(doc);
+  await backupMonthlyBudget(doc);
+  await backupExpenseTracking(doc);
+  await clearExpenses(doc);
+  setTimeout(async function () {
+    await registerRecurrentPayments(doc);
+    console.log("Waited 3 seconds");
+  }, 3000);
 })();
