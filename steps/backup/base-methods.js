@@ -14,11 +14,9 @@ const backupData = async (doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_I
 
   const shiftFactor = await calculateShiftFactor(dataToBeBackedUp, cellWhereBackupWillBePasted);
   dataToBackup.shiftFactor = shiftFactor;
-  console.log("Shiftfactor is  ", shiftFactor);
 
   const dataToBeBackedUpMatrixInfo = await getMatrixSizeFromA1(dataToBackup.dataLocation);
   dataToBackup.dataToBeBackedUpMatrixInfo = dataToBeBackedUpMatrixInfo;
-  console.log("Matrix info  ", dataToBeBackedUpMatrixInfo);
 
   const pasteMargin = 3;
   const pasteCellRange = await createCellRangeStringFromA1AndMatrixSize(
