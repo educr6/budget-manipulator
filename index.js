@@ -23,6 +23,5 @@ const registerRecurrentPayments = require("./steps/register_recurrent_payments")
   await clearExpenses(doc);
   setTimeout(async function () {
     await registerRecurrentPayments(doc);
-    console.log("Waited 3 seconds");
   }, 3000);
 })();
